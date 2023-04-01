@@ -98,8 +98,13 @@ static int out_unlocked(const char *s, size_t l)
 
 static int out(int f, const char *s, size_t l)
 {
-	if (f != stdout)
+	if (f != stdout){
+		const char * btr ="mark this\n";
+		write(stdout, btr, strlen(btr));
 		return write(f, s, l);
+	}
+//	const char * btr ="do not call write directly\n";
+//	write(stdout, btr, strlen(btr));
 	int len = 0;
 	if (buffer_lock_enabled == 1) {
 		// for multiple threads io

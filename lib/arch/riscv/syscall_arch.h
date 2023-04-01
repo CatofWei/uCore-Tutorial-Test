@@ -1,6 +1,10 @@
 #define __SYSCALL_LL_E(x) (x)
 #define __SYSCALL_LL_O(x) (x)
-
+/**
+ * 这个函数相当于c标准库中的系统调用，使用汇编语言结合处理器提供的指令编写的。
+ * 在riscv架构中，使用方法是将系统调用序号转给a7寄存器，参数1，2，3，4,...分别传给a0，a1,a2,a3,...寄存器
+ * 然后调用ecall，陷入内核态，开始处理异常，这里处理异常的函数设置为了uservec。
+ */
 #define __asm_syscall(...)                                                     \
 	__asm__ __volatile__("ecall\n\t" : "=r"(a0) : __VA_ARGS__ : "memory"); \
 	return a0;
@@ -33,7 +37,7 @@ static inline long __syscall3(long n, long a, long b, long c)
 	register long a0 __asm__("a0") = a;
 	register long a1 __asm__("a1") = b;
 	register long a2 __asm__("a2") = c;
-	__asm_syscall("r"(a7), "0"(a0), "r"(a1), "r"(a2))
+	__asm_syscall("r"(a7), "r"(a0), "r"(a1), "r"(a2))
 }
 
 static inline long __syscall4(long n, long a, long b, long c, long d)
